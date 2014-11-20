@@ -81,7 +81,7 @@ class Locale(object):
 				k = 'emergency'
 		if k == None:
 			k = 'night'
-			if w.get_sunrise_time() >= w.get_reference_time() >= w.get_sunset_time():
+			if w.get_sunrise_time() <= w.get_reference_time() <= w.get_sunset_time():
 				k = 'day'
 		return Locale._lookup[k]
 
