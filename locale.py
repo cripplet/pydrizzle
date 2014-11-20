@@ -34,17 +34,18 @@ class Locale(object):
 	@property
 	def pyowm_model(self):
 		if self._pyowm_model == None:
-			if self._coords is not None:
-				try:
+			try:
+				if self._coords is not None:
 					self._pyowm_model = config.conn.weather_around_coords(self.lat, self.long)[0]
-				except Exception as e:
+				elif self._name is not None:
+					self._pyowm_model = config.conn.weather_at_place(self._name)
+				else:
 					raise LookupError()
-			elif self._name is not None:
-				self._pyowm_model = config.conn.weather_at_place(self._name)
-				if self._pyowm_model == None:
-					raise LookupError()
-			else:
+			except Exception as e:
 				raise LookupError()
+			if self._pyowm_model == None:
+				raise LookupError()
+
 			self._name = self._pyowm_model.get_location().get_name()
 			self._coords = (self._pyowm_model.get_location().get_lat(), self._pyowm_model.get_location().get_lon())
 		return self._pyowm_model
