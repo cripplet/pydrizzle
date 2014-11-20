@@ -8,10 +8,13 @@ class Locale(object):
 	def __init__(self, *args, **kwargs):
 		self._coords = None
 		self._name = None
+		self._id = None
 		if 'coords' in kwargs.keys():
 			self._coords = kwargs.pop('coords')
 		if 'name' in kwargs.keys():
 			self._name = kwargs.pop('name')
+		if 'id' in kwargs.keys():
+			self._name = kwargs.pop('id')
 		self.__dict__.update(kwargs)
 		self._pyowm_model = None
 
@@ -28,6 +31,10 @@ class Locale(object):
 		return None
 
 	@property
+	def id(self):
+		return self._id
+
+	@property
 	def name(self):
 		return self._name
 
@@ -36,9 +43,11 @@ class Locale(object):
 		if self._pyowm_model == None:
 			try:
 				if self._coords is not None:
-					self._pyowm_model = config.conn.weather_around_coords(self.lat, self.long)[0]
-				elif self._name is not None:
-					self._pyowm_model = config.conn.weather_at_place(self._name)
+					self._pyowm_model = config.conn.weather_at_coords(self.lat, self.long)
+				elif self.id is not None:
+					self._pyowm_model = config.conn.weather_at_id(self.id)
+				elif self.name is not None:
+					self._pyowm_model = config.conn.weather_at_place(self.name)
 				else:
 					raise LookupError()
 			except Exception as e:
@@ -48,6 +57,7 @@ class Locale(object):
 
 			self._name = self._pyowm_model.get_location().get_name()
 			self._coords = (self._pyowm_model.get_location().get_lat(), self._pyowm_model.get_location().get_lon())
+			self._id = int(self._pyowm_model.get_location().get_ID())
 		return self._pyowm_model
 
 	_lookup = {
@@ -92,6 +102,8 @@ def forecast(arg, verbose=True):
 		f = Locale(name=arg).forecast
 	elif isinstance(arg, tuple):
 		f = Locale(coords=arg).forecast
+	elif isinstance(arg, int):
+		f = Locale(id=arg).forecast
 	if verbose:
 		print f
 	return f
@@ -99,8 +111,10 @@ def forecast(arg, verbose=True):
 if __name__ == '__main__':
 	chicago = Locale(name='Chicago')
 	assert(chicago.name == 'Chicago')
+	assert(chicago.id == None)
 	assert(chicago.lat == None)
 	assert(chicago.pyowm_model != None)
 	assert(chicago.lat != None)
+	assert(chicago.id == 4887398)
 	assert(chicago.forecast)
 	assert(forecast('Chicago', verbose=False) == chicago.forecast)
