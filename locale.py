@@ -108,7 +108,7 @@ def forecast(arg, verbose=True):
 		print f
 	return f
 
-if __name__ == '__main__':
+def test():
 	chicago = Locale(name='Chicago')
 	assert(chicago.name == 'Chicago')
 	assert(chicago.id == None)
@@ -118,3 +118,14 @@ if __name__ == '__main__':
 	assert(chicago.id == 4887398)
 	assert(chicago.forecast)
 	assert(forecast('Chicago', verbose=False) == chicago.forecast)
+
+if __name__ == '__main__':
+	from sys import argv
+	if len(argv) == 2:
+		arg = argv[1]
+		if arg == 'test':
+			test()
+		else:
+			forecast(arg)
+	else:
+		print('usage: %s (test|city|coords|id)' % argv[0])
