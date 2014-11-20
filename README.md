@@ -23,4 +23,8 @@ import locale
 print locale.Locale(name="Chicago").forecast
 print locale.Locale(name="Mt. Rushmore").forecast
 print locale.Locale(coords=(-22.57, -43.12)).forecast
+
+# wrapper function
+f = locale.forecast('Chicago', verbose=False)
+assert(f == locale.Locale(name='Chicago').forecast)
 ```

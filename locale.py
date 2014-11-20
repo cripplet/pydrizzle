@@ -85,10 +85,21 @@ class Locale(object):
 				k = 'day'
 		return Locale._lookup[k]
 
-if __name__ == "__main__":
-	chicago = Locale(name="Chicago")
-	assert(chicago.name == "Chicago")
+def forecast(arg, verbose=True):
+	f = None
+	if isinstance(arg, str):
+		f = Locale(name=arg).forecast
+	elif isinstance(arg, tuple):
+		f = Locale(coords=arg).forecast
+	if verbose:
+		print f
+	return f
+
+if __name__ == '__main__':
+	chicago = Locale(name='Chicago')
+	assert(chicago.name == 'Chicago')
 	assert(chicago.lat == None)
 	assert(chicago.pyowm_model != None)
 	assert(chicago.lat != None)
 	assert(chicago.forecast)
+	assert(forecast('Chicago', verbose=False) == chicago.forecast)
