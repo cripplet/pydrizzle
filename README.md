@@ -20,8 +20,8 @@ usage
 
 ```python
 import locale
-print locale.Locale(name="Chicago").forecast
-print locale.Locale(name="Mt. Rushmore").forecast
+print locale.Locale(name='Chicago').forecast
+print locale.Locale(name='New York').forecast
 print locale.Locale(coords=(-22.57, -43.12)).forecast
 
 # wrapper function
