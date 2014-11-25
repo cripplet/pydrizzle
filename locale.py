@@ -32,11 +32,19 @@ class Locale(object):
 
 	@property
 	def id(self):
+		if self._name == '':
+			return 'Unknown'
 		return self._id
 
 	@property
 	def name(self):
+		if self._name == '':
+			return 'Unknown'
 		return self._name
+
+	@property
+	def country(self):
+		return self.pyowm_model.get_location().get_country()
 
 	@property
 	def pyowm_model(self):
@@ -70,6 +78,10 @@ class Locale(object):
 	}
 
 	@property
+	def temp(self):
+		return str(self.pyowm_model.get_weather().get_temperature()['temp'] - 273.15)
+
+	@property
 	def forecast(self):
 		# http://openweathermap.org/weather-conditions
 		w = self.pyowm_model.get_weather()
@@ -96,14 +108,18 @@ class Locale(object):
 				k = 'day'
 		return Locale._lookup[k]
 
-def forecast(arg, verbose=True):
-	f = None
+def forecast(arg, t=False, verbose=True):
+	instance = None
 	if isinstance(arg, str):
-		f = Locale(name=arg).forecast
+		instance = Locale(name=arg)
 	elif isinstance(arg, tuple):
-		f = Locale(coords=arg).forecast
+		instance = Locale(coords=arg)
 	elif isinstance(arg, int):
-		f = Locale(id=arg).forecast
+		instance = Locale(id=arg)
+	f = instance.forecast
+	if t:
+		f += '  ' + str(int(float(instance.temp))) + u'\u00b0' + 'C'
+	f += '  (%s, %s)' % (instance.name, instance.country)
 	if verbose:
 		print f
 	return f
@@ -126,6 +142,9 @@ if __name__ == '__main__':
 		if arg == 'test':
 			test()
 		else:
-			forecast(arg)
+			try:
+				forecast(arg, t=True)
+			except Exception:
+				exit(-1)
 	else:
 		print('usage: %s (test|city|coords|id)' % argv[0])
